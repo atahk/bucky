@@ -1,39 +1,39 @@
 \name{vcovCR}
 \alias{vcovCR}
 \title{
-Clustered Robust Covariance Matrix Estimation
+  Clustered Robust Covariance Matrix Estimation
 }
 \description{
-Robust estimation of the covariance matrix of the coefficient estimates
-in regression models with clustering.
+  Robust estimation of the covariance matrix of the coefficient estimates
+  in regression models with clustering.
 }
 \usage{
 vcovCR(x, cluster = NULL, type = c("CR", "CR0", "CR1"))
 }
 \arguments{
   \item{x}{
-A fitted model object.
-}
+    A fitted model object.
+  }
   \item{cluster}{
-A variable or expression giving the cluster for each observation.
-}
-\item{type}{
-A character string specifying the estimation type. For
-details see below.
-}
+    A variable or expression giving the cluster for each observation.
+  }
+  \item{type}{
+    A character string specifying the estimation type. For
+    details see below.
+  }
 }
 \details{
-The default \code{type} of "CR" uses the same adjustment as Stata. The
-values of "CR0" and "CR1" are analagous to "HC0" and "HC1",
-respectively, in \code{vcovHC}.
+  The default \code{type} of "CR" uses the same adjustment as 'Stata'.
+  The values of "CR0" and "CR1" are analagous to "HC0" and "HC1",
+  respectively, in \code{\link[sandwich]{vcovHC}}.
 }
 \value{
-A matrix containing the covariance matrix estimate with attribute
-\code{type} giving the \code{type} option used in estimating it.
+  A matrix containing the covariance matrix estimate with attribute
+  \code{type} giving the \code{type} option used in estimating it.
 }
 
 \seealso{
-See Also \code{\link{robust.summary}} and \code{\link[sandwich]{vcovHC}}.
+  See Also \code{\link{robust.summary}} and \code{\link[sandwich]{vcovHC}}.
 }
 \examples{
 clotting <- data.frame(
@@ -48,7 +48,7 @@ data(swiss)
 model1 <- lm(Fertility ~ ., data = swiss)
 ## These should give the same answer
 vcovCR(model1, cluster=1:nobs(model1), type="CR0")
-vcovHC(model1, type="HC0")
+sandwich::vcovHC(model1, type="HC0")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

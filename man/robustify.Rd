@@ -43,7 +43,9 @@ model, coefficients, and variance-covariance matrix based on
 option is specified, the variance-covariance matrix is computed using
 \code{\link{vcovCR}} with clustering on \code{cluster}. If not, the
 variance-covariance matrix is computed using
-\code{\link[sandwich]{vcovHC}}.
+\code{\link[sandwich]{vcovHC}}. The outputted objects should be
+compatible with the 'stargazer' and 'texreg' packages for formatting
+tables of regression coefficients.
 }
 \value{
 An object of class \code{robustified} with the \code{method}
@@ -62,12 +64,14 @@ clotting <- data.frame(
             69,35,26,21,18,16,13,12,12))
 clot.model <- glm(lot ~ log(u), data = clotting, family = Gamma)
 robust.clot.model <- robustify(clot.model, cluster=cl)
-coeftest(robust.clot.model)
+robust.clot.model
+summary(robust.clot.model)
 
 ## Without clustering
 data(swiss)
 model1 <- robustify(lm(Fertility ~ ., data = swiss))
-coeftest(model1)
+model1
+summary(model1)
 }
 \keyword{ robust }% use one of  RShowDoc("KEYWORDS")
 \keyword{ cluster }
