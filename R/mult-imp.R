@@ -1,4 +1,11 @@
-mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALSE, ...) {
+midsimp2df <- function(object, i) {
+    df <- object$data
+    for (j in names(object$imp))
+        df[object$where[,j], j] <- object$imp[[j]][,i]
+    return(df)
+}
+
+mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL, lazy=NULL, ...) {
     mf.raw <- match.call()
     if (!("EXPR" %in% names(mf.raw)))
         stop("Must specify R command to apply across multiply imputed datasets.")
@@ -39,15 +46,44 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     m <- match(c("data"), names(mf), 0L)
     if (m==0)
         stop("Must use \"data\" option for multiple imputation.")
-    if (is.null(eval(mf[[m]])$imputations))
+    if (is.null(lazy))
+        lazy <- is.name(mf[[m]])
+    if (!lazy) {
+        imputations <- eval(mf[[m]])
+        mf[[m]] <- as.name("imputations")
+    }
+    mfmclass <- eval(substitute(class(x), list(x=mf[[m]])))
+    if ("mids" %in% mfmclass)
+        imp.info <- list(size=eval(substitute((x)$m, list(x=mf[[m]]))),
+                    names=NULL,
+                    sub=function(i, mf, m) { mf[[m]] <- substitute(midsimp2df(x, y), list(x=mf[[m]], y=i)); return(eval(mf)) })
+    else if ("amelia" %in% mfmclass || "imputationList" %in% mfmclass)
+        imp.info <- list(size=eval(substitute(length((x)$imputations), list(x=mf[[m]]))),
+                    names=eval(substitute(names((x)$imputations), list(x=mf[[m]]))),
+                    sub=function(i, mf, m) { mf[[m]] <- substitute((x)$imputations[[y]], list(x=mf[[m]], y=i)); return(eval(mf)) })
+    else if ("data.frame" %in% mfmclass)
+        imp.info <- list(size=1L,
+                    names=NULL,
+                    sub=function(i, mf, m) { return(eval(mf)) })
+    else if (eval(substitute(is.list(x) && is.data.frame((x)[[1L]]), list(x=mf[[m]]))))
+        imp.info <- list(size=eval(substitute(length(x), list(x=mf[[m]]))),
+                         names=eval(substitute(names(x), list(x=mf[[m]]))),
+                         sub=function(i, mf, m) { mf[[m]] <- substitute((x)[[y]], list(x=mf[[m]], y=i)); return(eval(mf)) })
+    else
         stop("No imputations found.")
-    num.imp <- length(eval(mf[[m]])$imputations)
-    if (num.imp < 1)
+    num.imp <- imp.info$size
+    if (num.imp < 1L)
         stop("Empty list of imputations.")
-    if (num.imp == 1) {
-        mf[[m]] <- substitute((x)$imputations[[y]], list(x=mf[[m]], y=1L))
+    if (num.imp == 1L) {
         warning("Only one data set found. Returning regular model estimates.")
         return(eval(mf))
+    }
+    if (is.null(parallel)) {
+        parallel <- requireNamespace("parallel", quietly=TRUE)
+        if (parallel)
+            parallel <- getOption("mc.cores", parallel::detectCores() - 1L) > 1L
+        if (is.na(parallel))
+            parallel <- FALSE
     }
     if (parallel) {
         parallel <- requireNamespace("parallel", quietly=TRUE)
@@ -55,12 +91,12 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
             warning("Can't load \"parallel\" parallel. Using serial computation.")
     }
     if (parallel)
-        imp.list <- parallel::mclapply(1:num.imp, function(i, mf) { mf[[m]] <- substitute((x)$imputations[[y]], list(x=mf[[m]], y=i)); return(eval(mf)) }, mf=mf, ...)
+        imp.list <- parallel::mclapply(1:num.imp, imp.info$sub, mf=mf, m=m, ...)
     else
-        imp.list <- lapply(1:num.imp, function(i, mf) { mf[[m]] <- substitute((x)$imputations[[y]], list(x=mf[[m]], y=i)); return(eval(mf)) }, mf=mf, ...)
-    names(imp.list) <- names(eval(mf[[m]])$imputations)
-    if (is.null(df.)){
-        if (all(sapply(imp.list, inherits, what="glm")))
+        imp.list <- lapply(1:num.imp, imp.info$sub, mf=mf, m=m, ...)
+    names(imp.list) <- imp.info$names
+    if (is.null(df.)) {
+        if (all(sapply(imp.list, inherits, what="glm") | sapply(imp.list, inherits, what="glmerMod")))
             df. <- Inf
         else
             df. <- df.residual
@@ -68,7 +104,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     if (is.function(df.))
         df. <- min(sapply(imp.list, df.))
     if (is.null(df.))
-        df. <- Inf    
+        df. <- Inf
     coeflist <- suppressWarnings(lapply(1:length(imp.list), function(i, expr) { expr[[2]] <- substitute(imp.list[[i]], list(i=i)); eval(expr) }, expr=coef.expr))
     vcovlist <- suppressWarnings(lapply(1:length(imp.list), function(i, expr) { expr[[2]] <- substitute(imp.list[[i]], list(i=i)); eval(expr) }, expr=vcov.expr))
     vcovnames <- rownames(vcovlist[[1]])
@@ -115,6 +151,15 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
             m.out$nobs <- imp.nobs
         }
     }
+    imp.resid <- try(sapply(imp.list, function(x) x$residuals), silent=TRUE)
+    if (!inherits(imp.resid, "try-error")) {
+        if (is.matrix(imp.resid))
+            m.out$residuals <- apply(imp.resid, 1, mean, na.rm=TRUE)
+        else if (is.numeric(imp.resid))
+            m.out$residuals <- imp.resid
+        else if (is.list(imp.resid) && all(sapply(imp.resid, is.numeric)))
+            m.out$residuals <- rep(NA, min(sapply(imp.resid, length)))
+    }
     if (any(is.finite(df.)))
         m.out$df.complete <- df.
     if ("missMatrix" %in% eval(substitute(names(x), list(x=mf[[m]]))))
@@ -122,14 +167,14 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     if (!is.null(mthd.plus))
         m.out$note <- mthd.plus
     class(m.out) <- "mi.estimates"
-    m.out$call <- mf.raw
-    m.out$subcall <- mf
+    m.out$mi.call <- mf.raw
+    m.out$call <- mf
     return(m.out)
 }
 
 vcov.mi.estimates <- function(object, ...) return(object$vcov)
 print.mi.estimates <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
-    cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), 
+    cat("\nCall:\n", paste(deparse(x$mi.call), sep = "\n", collapse = "\n"), 
         "\n\n", sep = "")
     if (length(coef(x))) {
         cat("Coefficients:\n")
@@ -141,13 +186,13 @@ print.mi.estimates <- function(x, digits = max(3L, getOption("digits") - 3L), ..
     invisible(x)
 }
 summary.mi.estimates <- function(object, ...) {
-    m.out <- list(coefficients = coeftest(object, ...), df.residual=object$df.residual, call=object$call, subcall=object$subcall, num.imp=object$num.imp, note=object$note)
+    m.out <- list(coefficients = coeftest(object, ...), df.residual=object$df.residual, mi.call=object$mi.call, call=object$call, num.imp=object$num.imp, note=object$note)
     attr(m.out$coefficients, "method") <- paste("Coefficients")
     class(m.out) <- "summary.mi.estimates"
     return(m.out)
 }
 print.summary.mi.estimates <- function(x, ...) {
-    cat("\nCall:\n", paste(deparse(x$subcall), sep = "\n", collapse = "\n"), 
+    cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"), 
         "\n\n", sep = "")
     cat("Coefficients:\n")
     printCoefmat(x$coefficients, ...)
@@ -158,11 +203,13 @@ print.summary.mi.estimates <- function(x, ...) {
     cat("\n\n")
     invisible(x)
 }
-extract.mi.estimates <- function(model, include.nobs = TRUE) {
+extract.mi.estimates <- function(model, include.nobs = TRUE, include.imp = TRUE) {
     s <- summary(model)
     gof <- list()
     if (include.nobs)
         gof[["Num. obs."]] <- try(nobs(model))
+    if (include.imp)
+        gof[["Imputations"]] <- try(as.integer(model$num.imp))
     gof <- gof[!(sapply(gof, inherits, what="try-error") | sapply(gof, is.null))]
     return(texreg::createTexreg(
         coef.names = rownames(s$coef),

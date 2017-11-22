@@ -43,9 +43,11 @@ model, coefficients, and variance-covariance matrix based on
 option is specified, the variance-covariance matrix is computed using
 \code{\link{vcovCR}} with clustering on \code{cluster}. If not, the
 variance-covariance matrix is computed using
-\code{\link[sandwich]{vcovHC}}. The outputted objects should be
-compatible with the 'stargazer' and 'texreg' packages for formatting
-tables of regression coefficients.
+\code{\link[sandwich]{vcovHC}}. For generating formatted tables of
+regression coefficients, the outputted objects should be
+compatible with the 'texreg' package. When used with \code{lm},
+\code{glm} or a few other types of models, these objects are also
+compatible with the 'stargazer' package.
 }
 \value{
 An object of class \code{robustified} with the \code{method}
@@ -54,6 +56,12 @@ attribute specifying the type of standard errors used.
 
 \seealso{
 See Also \code{\link{summary.robustified}}, \code{\link[sandwich]{vcovHC}}, \code{\link{vcovCR}} and \code{\link[lmtest]{coeftest}}.
+}
+\references{
+  Cameron, A. Colin, and Douglas L. Miller.
+  \dQuote{\href{http://doi.org/10.3368/jhr.50.2.317}{A
+      Practitioner's Guide to Cluster-Robust Inference}.}
+  \emph{Journal of Human Resources} 50, no. 2 (Spring 2015): 317-372.
 }
 \examples{
 ## With clustering
