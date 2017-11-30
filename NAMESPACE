@@ -1,9 +1,12 @@
-importFrom("stats", "nobs", "coef", "df.residual", "var", "vcov", "logLik", "deviance", "AIC", "BIC", "printCoefmat", "naprint")
+importFrom("stats", "nobs", "coef", "df.residual", "var", "vcov",
+           "logLik", "deviance", "AIC", "BIC", "printCoefmat",
+           "naprint", ".checkMFClasses", "delete.response", "family",
+           "model.frame", "model.matrix", "na.action", "qnorm",
+           "terms")
 importFrom("sandwich", "vcovHC", "sandwich", "estfun")
 importFrom("lmtest", "coeftest", "coeftest.default")
-importFrom("methods", "isGeneric", "setGeneric", "setMethod", "className")
-
-## importMethodsFrom(texreg, extract)
+importFrom("methods", "isGeneric", "setGeneric", "setMethod",
+           "className")
 
 S3method(summary,mi.estimates)
 S3method(vcov,mi.estimates)
@@ -13,6 +16,7 @@ S3method(print,summary.mi.estimates)
 S3method(summary,robustified)
 S3method(print,robustified)
 S3method(vcov,robustified)
+S3method(predict,robustified)
 S3method(print,summary.robustified)
 S3method(vcov,summary.robustified)
 

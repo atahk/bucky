@@ -44,6 +44,8 @@ robustify <- function (x, cluster, type, omega, ...)
         m <- match(c("x", "type", "omega"), names(mf), 0L)
         mf <- mf[c(1L, m)]
         mf[[1]] <- quote(vcovHC)
+        if (!("type" %in% names(mf)))
+            mf[["type"]] <- "HC0"
         mthd.plus <- "robust standard errors"
     }
     if (is.list(x)) {
@@ -128,6 +130,70 @@ print.summary.robustified <- function(x, digits = max(3L, getOption("digits") - 
 
 vcov.robustified <- function(object, ...) object$cov.robust
 vcov.summary.robustified <- function(object, ...) object$cov.scaled
+
+predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
+                                interval = c("none", "confidence", "prediction"),
+                                level = 0.95,
+                                ...) {
+    interval <- match.arg(interval)
+    if ((interval == "none") && !se.fit) {
+        return(NextMethod())
+    } else {
+        if (inherits(object, "lm")) {
+            call <- match.call()
+            if ("type" %in% names(call))
+                type <- eval(call[[which("type" == names(call))]])
+            else if (inherits(object, "glm"))
+                type <- "link"
+            else
+                type <- "response"
+            if (!(type %in% c("link", "response", "terms")))
+                stop("invalid type argument")
+            else if (type == "terms")
+                stop("type \"terms\" not yet implemented")
+            if (missing(newdata)) {
+                X <- model.matrix(object)
+                offset <- object$offset
+            } else {
+                tt <- terms(object)
+                Terms <- delete.response(tt)
+                m <- model.frame(Terms, newdata, na.action = na.action,
+                                 xlev = object$xlevels)
+                if (!is.null(cl <- attr(Terms, "dataClasses"))) 
+                    .checkMFClasses(cl, m)
+                X <- model.matrix(Terms, m, contrasts.arg = object$contrasts)
+                offset <- rep(0, nrow(X))
+                if (!is.null(off.num <- attr(tt, "offset"))) 
+                    for (i in off.num)
+                        offset <- offset + eval(attr(tt, "variables")[[i + 1]], newdata)
+                if (!is.null(object$call$offset)) 
+                    offset <- offset + eval(object$call$offset, newdata)
+            }
+            beta <- object$coefficients
+            fit <- as.vector(X %*% beta)
+            if (!is.null(offset)) 
+                fit <- fit + as.vector(offset)
+            stderr <- sqrt(apply((X %*% object$cov.robust) * X, 1, sum))
+            switch(interval, none = , confidence = {
+                fit <- outer(stderr, qnorm(0.5 + level * c(fit=0, lwr=-0.5, upr=0.5))) + fit
+            }, prediction = {
+                stop("prediction confidence intervals not available for robustified objects")
+            })
+            switch(type, response = {
+                stderr <- stderr * abs(family(object)$mu.eta(fit))
+                fit <- family(object)$linkinv(fit)
+            }, link = , terms = )
+            if (se.fit)
+                return(list(fit = fit, se.fit = stderr))
+            else
+                return(fit)
+        }
+        if (interval != "none")
+            stop("confidence intervals not yet implemented for robustified objects of this type")
+        else
+            stop("standard errors not yet implemented for robustified objects of this type")
+    }
+}
 
 extract.robustified <- function(model, include.aic = TRUE, include.bic = TRUE,
                                 include.loglik = TRUE, include.deviance = TRUE,

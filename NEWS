@@ -1,8 +1,17 @@
 * NEWS for Bucky's Archive for Data Analysis in the Social Sciences
 
-** Unreleased
+** Release 1.0.4 (2017-11-30)
    * Moved methods, sandwich, lmtest from "Depends" to "Imports"
    * Fixed robustify examples ("coeftest" replaced by "summary")
+   * Added option for lazy evaluation to "mi.eval"
+   * Changed default for robust standard errors to HC0 to match Stata
+   * Added predict method for robustified objects based on lm or glm
+     models
+   * Improved compatibility between "mi.eval" and other packages
+     * Added compatibility with 'mice'
+     * Fixed compatibility with 'mitools'
+     * Added compatibility with 'stargazer' when using lm, glm, and a
+       few other types of models
 
 ** Release 1.0.3 (2017-11-20)
    * Initial submission to CRAN
