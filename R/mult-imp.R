@@ -27,7 +27,8 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL
                 mthd.plus <- as.character(enquote(mf$cluster)[-1])
             if (nchar(mthd.plus) >= 40)
                 mthd.plus <- c("robust standard errors clustered on:",mthd.plus)
-            mthd.plus <- paste("robust standard errors clustered on",mthd.plus)
+            else
+                mthd.plus <- paste("robust standard errors clustered on",mthd.plus)
         }
         else if (robust) {
             vcov.expr[[1L]] <- quote(sandwich::vcovHC)
