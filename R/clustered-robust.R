@@ -192,7 +192,7 @@ predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
             if (!is.null(offset)) 
                 fit <- fit + as.vector(offset)
             stderr <- sqrt(apply((X %*% object$cov.robust) * X, 1, sum))
-            switch(interval, none = , confidence = {
+            switch(interval, confidence = {
                 fit <- outer(stderr, qnorm(0.5 + level * c(fit=0, lwr=-0.5, upr=0.5))) + fit
             }, prediction = {
                 stop("prediction confidence intervals not available for robustified objects")
