@@ -198,7 +198,7 @@ predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
                 stop("prediction confidence intervals not available for robustified objects")
             })
             switch(type, response = {
-                stderr <- stderr * abs(family(object)$mu.eta(fit))
+                stderr <- stderr * abs(family(object)$mu.eta(as.matrix(fit)[,1]))
                 fit <- family(object)$linkinv(fit)
             }, link = , terms = )
             if (se.fit)
