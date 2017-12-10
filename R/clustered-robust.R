@@ -131,9 +131,27 @@ print.summary.robustified <- function(x, digits = max(3L, getOption("digits") - 
 vcov.robustified <- function(object, ...) object$cov.robust
 vcov.summary.robustified <- function(object, ...) object$cov.scaled
 
+vcovHC.polr <- function (x, type = c("HC1", "HC0", "HC"), omega = NULL, sandwich = TRUE, ...)
+{
+    type <- match.arg(type)
+    if (type == "HC") 
+        type <- "HC0"
+    if (is.null(omega)) {
+        switch(type,
+               HC0 = omega <- function(residuals, diaghat, df) 1/length(residuals),
+               HC1 = omega <- function(residuals, diaghat, df) 1/df)
+    }
+    estf <- estfun(x)
+    out <- crossprod(estf, omega(rep(1,nrow(estf)), NULL, df.residual(x)) * estf)
+    if (sandwich) 
+        out <- sandwich(x, meat. = out, ...)
+    return(out)
+}
+
 predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
                                 interval = c("none", "confidence", "prediction"),
                                 level = 0.95,
+				na.action = na.pass,
                                 ...) {
     interval <- match.arg(interval)
     if ((interval == "none") && !se.fit) {
@@ -158,7 +176,7 @@ predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
                 tt <- terms(object)
                 Terms <- delete.response(tt)
                 m <- model.frame(Terms, newdata, na.action = na.action,
-                                 xlev = object$xlevels)
+                                 xlev = object$xlevels, ...)
                 if (!is.null(cl <- attr(Terms, "dataClasses"))) 
                     .checkMFClasses(cl, m)
                 X <- model.matrix(Terms, m, contrasts.arg = object$contrasts)
