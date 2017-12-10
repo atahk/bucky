@@ -201,6 +201,10 @@ predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
                 stderr <- stderr * abs(family(object)$mu.eta(as.matrix(fit)[,1]))
                 fit <- family(object)$linkinv(fit)
             }, link = , terms = )
+            if (is.matrix(fit) && is.null(rownames(fit)) && !is.null(names(stderr)))
+                rownames(fit) <- names(stderr)
+            else if ((!is.matrix(fit)) && is.null(names(fit)) && !is.null(names(stderr)))
+                names(fit) <- names(stderr)
             if (se.fit)
                 return(list(fit = fit, se.fit = stderr))
             else
