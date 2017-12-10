@@ -176,7 +176,7 @@ predict.robustified <- function(object, newdata = NULL, se.fit = FALSE,
                 tt <- terms(object)
                 Terms <- delete.response(tt)
                 m <- model.frame(Terms, newdata, na.action = na.action,
-                                 xlev = object$xlevels, ...)
+                                 xlev = object$xlevels)
                 if (!is.null(cl <- attr(Terms, "dataClasses"))) 
                     .checkMFClasses(cl, m)
                 X <- model.matrix(Terms, m, contrasts.arg = object$contrasts)
