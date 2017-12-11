@@ -1,5 +1,11 @@
 * NEWS for Bucky's Archive for Data Analysis in the Social Sciences
 
+** Release 1.0.5
+   * Fixed bugs with predict method for robustified objects
+   * Added vcovHC method for polr objects (from MASS)
+   * Added predict method for mi.estimates objects based on lm or glm
+   * MASS moved from "Suggests" to "Imports"
+
 ** Release 1.0.4 (2017-11-30)
    * Moved methods, sandwich, lmtest from "Depends" to "Imports"
    * Fixed robustify examples ("coeftest" replaced by "summary")

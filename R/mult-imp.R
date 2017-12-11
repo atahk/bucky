@@ -152,6 +152,19 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL
             m.out$nobs <- imp.nobs
         }
     }
+    imp.family <- try(lapply(imp.list, family), silent=TRUE)
+    if (!inherits(imp.family, "try-error") && length(unique(imp.family)) == 1)
+        m.out$family <- imp.family[[1L]]
+    imp.class <- try(lapply(imp.list, class), silent=TRUE)
+    if (!inherits(imp.class, "try-error") && length(unique(imp.class)) == 1)
+        m.out$model.class <- imp.class[[1L]]
+    imp.terms <- try(lapply(imp.list, terms), silent=TRUE)
+    if (!inherits(imp.terms, "try-error")) {
+        for (i in 1:length(imp.terms))
+            attr(imp.terms[[i]], ".Environment") <- NULL
+        if (length(unique(imp.terms)) == 1)
+            m.out$terms <- imp.terms[[1L]]
+    }
     imp.resid <- try(sapply(imp.list, function(x) x$residuals), silent=TRUE)
     if (!inherits(imp.resid, "try-error")) {
         if (is.matrix(imp.resid))
@@ -221,4 +234,38 @@ extract.mi.estimates <- function(model, include.nobs = TRUE, include.imp = TRUE)
         gof = unlist(gof),
         gof.decimal = sapply(gof, is.numeric) & !sapply(gof, is.integer)
     ))
+}
+
+predict.mi.estimates <- function (object, newdata = NULL, type = c("link", "response", "terms"), se.fit = FALSE, terms = NULL, na.action = na.pass, ...) {
+    type <- match.arg(type)    
+    if (missing(newdata))
+        stop("The predict method for mi.estimates objects is only implemented when newdata is specified")
+    if (type == "terms")
+        stop("The predict method for mi.estimates objects is not yet implemented for type=\"terms\"")
+    if (!any(c("glm","lm") %in% object$model.class))
+        stop("The predict method for mi.estimates objects is only implemented for those based on glm and lm objects")
+    Terms <- delete.response(object$terms)
+    m <- model.frame(Terms, newdata, na.action = na.action)
+    X <- model.matrix(Terms, m)
+    offset <- rep(0, nrow(X))
+    if (!is.null(off.num <- attr(object$terms, "offset"))) 
+        for (i in off.num)
+            offset <- offset + eval(attr(object$terms, "variables")[[i + 1]], newdata)
+    if (!is.null(object$call$offset))
+        offset <- offset + eval(object$call$offset, newdata)
+    predictor <- as.vector(X %*% coef(object))
+    if (!is.null(offset)) 
+        predictor <- predictor + offset
+    if (type == "response" && !is.null(object$family))
+        predictor <- object$family$linkinv(predictor)
+    names(predictor) <- rownames(X)
+    if (se.fit) {
+        predictor.se <- as.vector(sqrt(apply(X * (X %*% vcov(object)), 1, sum)))
+        if (type == "response" && !is.null(object$family))
+            predictor.se <- predictor.se * abs(object$family$mu.eta(predictor))
+        names(predictor.se) <- rownames(X)
+        return(list(fit = predictor, se.fit = predictor.se))
+    } else {
+        return(predictor)
+    }
 }
