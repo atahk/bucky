@@ -91,10 +91,15 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL
         if (!parallel)
             warning("Can't load \"parallel\" parallel. Using serial computation.")
     }
-    if (parallel)
+    if (parallel) {
         imp.list <- parallel::mclapply(1:num.imp, imp.info$sub, mf=mf, m=m, ...)
-    else
+        if (any(sapply(imp.list, inherits, what="try-error"))) {
+            stop(imp.list[which(sapply(imp.list, inherits, what="try-error"))[1]],
+                 call.=FALSE)
+        }
+    } else {
         imp.list <- lapply(1:num.imp, imp.info$sub, mf=mf, m=m, ...)
+    }
     names(imp.list) <- imp.info$names
     if (is.null(df.)) {
         if (all(sapply(imp.list, inherits, what="glm") | sapply(imp.list, inherits, what="glmerMod")))
@@ -102,8 +107,11 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL
         else
             df. <- df.residual
     }
-    if (is.function(df.))
-        df. <- min(sapply(imp.list, df.))
+    if (is.function(df.)) {
+        df. <- try(min(sapply(imp.list, df.)), silent=TRUE)
+        if (inherits(df., "try-error") || !is.numeric(df.))
+            df. <- Inf
+    }
     if (is.null(df.))
         df. <- Inf
     coeflist <- suppressWarnings(lapply(1:length(imp.list), function(i, expr) { expr[[2]] <- substitute(imp.list[[i]], list(i=i)); eval(expr) }, expr=coef.expr))
