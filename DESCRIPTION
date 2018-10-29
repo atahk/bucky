@@ -2,7 +2,7 @@ Package: bucky
 Type: Package
 Title: Bucky's Archive for Data Analysis in the Social Sciences
 Version: 1.0.5
-Date: 2017-11-30
+Date: 2018-10-29
 Author: Alexander Tahk [aut, cre]
 Maintainer: Alexander Tahk <tahk@alum.mit.edu>
 Authors@R: c(person("Alexander", "Tahk", role = c("aut", "cre"), email = "tahk@alum.mit.edu"))
