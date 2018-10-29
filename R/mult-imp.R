@@ -5,7 +5,7 @@ midsimp2df <- function(object, i) {
     return(df)
 }
 
-mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL, lazy=NULL, ...) {
+mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALSE, lazy=NULL, ...) {
     mf.raw <- match.call()
     if (!("EXPR" %in% names(mf.raw)))
         stop("Must specify R command to apply across multiply imputed datasets.")
@@ -92,7 +92,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=NULL
             warning("Can't load \"parallel\" parallel. Using serial computation.")
     }
     if (parallel) {
-        imp.list <- parallel::mclapply(1:num.imp, imp.info$sub, mf=mf, m=m, ...)
+        imp.list <- parallel::mclapply(1:num.imp, imp.info$sub, mf=mf, m=m, ..., mc.silent=TRUE, mc.allow.recursive=FALSE)
         if (any(sapply(imp.list, inherits, what="try-error"))) {
             stop(imp.list[which(sapply(imp.list, inherits, what="try-error"))[1]],
                  call.=FALSE)

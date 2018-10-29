@@ -8,7 +8,7 @@ Evaluation of an expression across multiply imputed data sets.
 }
 \usage{
 mi.eval(EXPR, robust, cluster, coef., vcov., df.=NULL,
-parallel=NULL, lazy=NULL, \dots)
+parallel=FALSE, lazy=NULL, \dots)
 }
 \arguments{
   \item{EXPR}{
@@ -56,8 +56,8 @@ parallel=NULL, lazy=NULL, \dots)
     A logical indicating whether to evaluate \code{EXPR} across data sets in
     parallel using \code{\link[parallel]{mclapply}}. Otherwise, 
     evalation is done serially using \code{\link[base]{lapply}}.
-    The default value of \code{NULL} means to use parallel evaluation if and
-    only if the 'parallel' package can be loaded and
+    \code{NULL} means to use parallel evaluation if and only if the
+    'parallel' package can be loaded and
     \code{getOption("mc.cores", detectCores()-1L)} is greater than 1.
   }
   \item{lazy}{
