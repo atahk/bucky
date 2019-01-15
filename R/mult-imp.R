@@ -123,7 +123,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     ind.v <- 1:k
     if ((length(names(coeflist[[1]])) > 0) & all(names(coeflist[[1]]) %in% rownames(vcovlist[[1]])))
         ind.v <- match(names(coeflist[[1]]), rownames(vcovlist[[1]]))
-    else if ((length(rownames(vcovlist[[1]])) > 0) & all(rownames(vcovlist[[1]])) %in% names(coeflist[[1]]))
+    else if ((length(rownames(vcovlist[[1]])) > 0) & all(rownames(vcovlist[[1]]) %in% names(coeflist[[1]])))
         ind.c <- match(rownames(vcovlist[[1]]),names(coeflist[[1]]))
     coeflist <- vapply(coeflist, function(x, ind) return(as.vector(x)[ind]), rep(0,k), ind=ind.c)
     vcovlist <- vapply(vcovlist, function(x, ind) return(as.matrix(x)[ind,ind,drop=FALSE]), diag(k), ind=ind.v)
