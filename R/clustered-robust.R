@@ -37,6 +37,14 @@ robustify <- function (x, cluster, type, omega, ...)
         m <- match(c("x", "cluster", "type"), names(mf), 0L)
         mf <- mf[c(1L, m)]
         mf[[1]] <- quote(vcovCR)
+        if (!("type" %in% names(mf))) {
+            if (inherits(x, "glm"))
+                mf[["type"]] <- "CR"
+            else if (inherits(x, "lm"))
+                mf[["type"]] <- "CR1"
+            else
+                mf[["type"]] <- "CR"
+        }
         mthd.plus <- paste("robust standard errors clustered on", 
             as.character(enquote(mf$cluster)[-1]))
     }
@@ -44,8 +52,14 @@ robustify <- function (x, cluster, type, omega, ...)
         m <- match(c("x", "type", "omega"), names(mf), 0L)
         mf <- mf[c(1L, m)]
         mf[[1]] <- quote(vcovHC)
-        if (!("type" %in% names(mf)))
-            mf[["type"]] <- "HC0"
+        if (!("type" %in% names(mf))) {
+            if (inherits(x, "glm"))
+                mf[["type"]] <- "HC0"
+            else if (inherits(x, "lm"))
+                mf[["type"]] <- "HC1"
+            else
+                mf[["type"]] <- "HC0"
+        }
         mthd.plus <- "robust standard errors"
     }
     if (is.list(x)) {

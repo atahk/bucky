@@ -22,9 +22,15 @@ used. If this is specified, clustered robust standard errors using
 \code{\link{vcovCR}} are used.
 }
   \item{type}{
-A character string specifying the estimation type. The default is to use the
-defaults for \code{\link[sandwich]{vcovHC}} or \code{\link{vcovCR}}, depending on whether
-\code{cluster} is specified. For details, see \code{\link[sandwich]{vcovHC}} or \code{\link{vcovCR}}.
+A character string specifying the estimation type. The default for
+linear models of class \code{lm} but not \code{glm} is to use
+"HC1" for \code{\link[sandwich]{vcovHC}} or "CR1" for
+\code{\link{vcovCR}}, depending on whether \code{cluster} is
+specified. For other models, the default is to use "HC" for
+\code{\link[sandwich]{vcovHC}} or "CR" for \code{\link{vcovCR}},
+depending on whether \code{cluster} is specified. This mirrors the
+defaults used by Stata as closely as possible.
+For details, see \code{\link[sandwich]{vcovHC}} or \code{\link{vcovCR}}.
 }
   \item{omega}{
 A vector or a function depending on the arguments `residuals'
