@@ -24,7 +24,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     if (!("vcov." %in% names(mf.raw))) {
         if ("cluster" %in% names(vcov.expr)) {
             vcov.expr[[1L]] <- quote(bucky::vcovCR)
-                mthd.plus <- as.character(enquote(mf$cluster)[-1])
+                mthd.plus <- as.character(enquote(mf.raw$cluster)[-1])
             if (nchar(mthd.plus) >= 40)
                 mthd.plus <- c("robust standard errors clustered on:",mthd.plus)
             else
