@@ -35,7 +35,7 @@ Maintainer: \packageMaintainer{bucky}
 \keyword{ package }
 \seealso{
   See also
-  \code{\link[mice]{mice-package}},
+  \code{\link[mice]{mice}},
   \code{\link[Amelia]{amelia-package}},
   \code{\link[mitools]{MIcombine}},
   \code{\link[sandwich]{sandwich}}
