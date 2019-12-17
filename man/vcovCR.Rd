@@ -24,7 +24,7 @@ vcovCR(x, cluster = NULL, type = c("CR", "CR0", "CR1"))
 }
 \details{
   The default \code{type} of "CR" uses the same adjustment as 'Stata'.
-  The values of "CR0" and "CR1" are analagous to "HC0" and "HC1",
+  The values of "CR0" and "CR1" are analogous to "HC0" and "HC1",
   respectively, in \code{\link[sandwich]{vcovHC}}.
 }
 \value{

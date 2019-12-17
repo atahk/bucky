@@ -4,7 +4,7 @@ This is an R package that provides functions for various statistical techniques 
 
 ## Installation
 
-Most users should use latest stable release of the packge, which can be installed from [CRAN](https://cran.r-project.org/) by running
+Most users should use latest stable release of the package, which can be installed from [CRAN](https://cran.r-project.org/) by running
 ```R
 install.packages("bucky")
 ```

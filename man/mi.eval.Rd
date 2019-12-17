@@ -25,7 +25,7 @@ parallel=FALSE, lazy=NULL, \dots)
     \code{TRUE} if \code{cluster} is specified and \code{FALSE} otherwise.
   }
   \item{cluster}{
-    A vector specifing clusters for the purpose of computing clustered
+    A vector specifying clusters for the purpose of computing clustered
     robust standard errors. This can be a variable inside the
     imputed data set. If unspecified, standard errors are not clustered. If
     specified, \code{robust} cannot be \code{FALSE}.
@@ -55,7 +55,7 @@ parallel=FALSE, lazy=NULL, \dots)
   \item{parallel}{
     A logical indicating whether to evaluate \code{EXPR} across data sets in
     parallel using \code{\link[parallel]{mclapply}}. Otherwise, 
-    evalation is done serially using \code{\link[base]{lapply}}.
+    evaluation is done serially using \code{\link[base]{lapply}}.
     \code{NULL} means to use parallel evaluation if and only if the
     'parallel' package can be loaded and
     \code{getOption("mc.cores", detectCores()-1L)} is greater than 1.
