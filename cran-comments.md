@@ -1,6 +1,6 @@
 ## Test environments
-* local OS X 10.13, R 3.5.1
-* local Ubuntu 18.04, R 3.5.1
+* local Ubuntu 19.10, R 3.6.2
+* local OS X 10.13.6, R 3.6.2
 * win-builder, R devel
 
 ## R CMD check results
