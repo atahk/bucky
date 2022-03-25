@@ -4,7 +4,7 @@ Title: Bucky's Archive for Data Analysis in the Social Sciences
 Version: 1.0.7
 Date: 2022-03-25
 Authors@R: c(person("Alexander", "Tahk", role = c("aut", "cre"), email = "tahk@alum.mit.edu", comment = c(ORCID = "0000-0001-7895-9420")))
-Author: Alexander Tahk [aut, cre]
+Author: Alexander Tahk [aut, cre] (<https://orcid.org/0000-0001-7895-9420>)
 Maintainer: Alexander Tahk <tahk@alum.mit.edu>
 Depends: R (>= 3.1.0)
 Imports: methods, sandwich, lmtest
