@@ -3,9 +3,9 @@ Type: Package
 Title: Bucky's Archive for Data Analysis in the Social Sciences
 Version: 1.0.7
 Date: 2022-03-25
+Authors@R: c(person("Alexander", "Tahk", role = c("aut", "cre"), email = "tahk@alum.mit.edu", comment = c(ORCID = "0000-0001-7895-9420")))
 Author: Alexander Tahk [aut, cre]
 Maintainer: Alexander Tahk <tahk@alum.mit.edu>
-Authors@R: c(person("Alexander", "Tahk", role = c("aut", "cre"), email = "tahk@alum.mit.edu"), comment = c(ORCID = "0000-0001-7895-9420"))
 Depends: R (>= 3.1.0)
 Imports: methods, sandwich, lmtest
 Suggests: MASS, parallel, Amelia, mice
@@ -13,5 +13,3 @@ Enhances: texreg, stargazer
 URL: http://github.com/atahk/bucky
 Description: Provides functions for various statistical techniques commonly used in the social sciences, including functions to compute clustered robust standard errors, combine results across multiply-imputed data sets, and simplify the addition of robust and clustered robust standard errors.
 License: GPL (>= 3)
-NeedsCompilation: no
-Packaged: 2022-03-25 16:11:19 UTC; tahk
