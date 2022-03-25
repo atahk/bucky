@@ -1,6 +1,6 @@
 ## Test environments
-* local Ubuntu 19.10, R 3.6.2
-* local OS X 10.13.6, R 3.6.2
+* local Ubuntu 20.04, R 4.1.3
+* macOS builder, R release
 * win-builder, R devel
 
 ## R CMD check results

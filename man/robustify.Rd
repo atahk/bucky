@@ -65,9 +65,9 @@ See Also \code{\link{summary.robustified}}, \code{\link[sandwich]{vcovHC}}, \cod
 }
 \references{
   Cameron, A. Colin, and Douglas L. Miller.
-  \dQuote{\href{http://doi.org/10.3368/jhr.50.2.317}{A
-      Practitioner's Guide to Cluster-Robust Inference}.}
+  \dQuote{A Practitioner's Guide to Cluster-Robust Inference.}
   \emph{Journal of Human Resources} 50, no. 2 (Spring 2015): 317-372.
+  \doi{10.3368/jhr.50.2.317}
 }
 \examples{
 ## With clustering

@@ -10,6 +10,6 @@ Depends: R (>= 3.1.0)
 Imports: methods, sandwich, lmtest
 Suggests: MASS, parallel, Amelia, mice
 Enhances: texreg, stargazer
-URL: http://github.com/atahk/bucky
+URL: https://github.com/atahk/bucky
 Description: Provides functions for various statistical techniques commonly used in the social sciences, including functions to compute clustered robust standard errors, combine results across multiply-imputed data sets, and simplify the addition of robust and clustered robust standard errors.
 License: GPL (>= 3)

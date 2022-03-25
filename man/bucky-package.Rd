@@ -19,15 +19,15 @@ Maintainer: \packageMaintainer{bucky}
 }
 \references{
   Cameron, A. Colin, and Douglas L. Miller.
-  \dQuote{\href{http://doi.org/10.3368/jhr.50.2.317}{A
-      Practitioner's Guide to Cluster-Robust Inference}.}
+  \dQuote{A Practitioner's Guide to Cluster-Robust Inference.}
   \emph{Journal of Human Resources} 50, no. 2 (Spring 2015): 317-372.
+  \doi{10.3368/jhr.50.2.317}
   
   Little, Roderick J. A., and Donald B. Rubin.
-  \dQuote{\href{https://doi.org/10.1177/0049124189018002004}{The Analysis
-      of Social Science Data with Missing Values}.}
+  \dQuote{The Analysis of Social Science Data with Missing Values.}
   \emph{Sociological Methods & Research}
   18, no. 2-3 (November 1989): 292-326.
+  \doi{10.1177/0049124189018002004}
 
   Rubin, Donald. B. \emph{Multiple Imputation for Nonresponse in
     Surveys}. New York: John Wiley & Sons, 2004.
