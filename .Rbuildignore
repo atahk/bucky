@@ -1,4 +1,8 @@
 LICENSE
 README.md
 cran-comments.md
+^\.git
 ^revdep$
+^CRAN-RELEASE$
+^LICENSE$
+^LICENSE\.md$

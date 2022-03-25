@@ -1,5 +1,9 @@
 # NEWS for Bucky's Archive for Data Analysis in the Social Sciences
 
+## Release 1.0.7 (2019-12-17)
+   * Fixed bug regarding behavior of mi.eval with polr models
+   * Removed unnecessary code
+
 ## Release 1.0.6 (2019-12-17)
    * Fixed small parentheses bug in mi.eval
    * Updated robustify to mirror Stata defaults with linear models

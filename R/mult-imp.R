@@ -1,10 +1,3 @@
-midsimp2df <- function(object, i) {
-    df <- object$data
-    for (j in names(object$imp))
-        df[object$where[,j], j] <- object$imp[[j]][,i]
-    return(df)
-}
-
 mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALSE, lazy=NULL, ...) {
     mf.raw <- match.call()
     if (!("EXPR" %in% names(mf.raw)))
@@ -57,7 +50,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     if ("mids" %in% mfmclass)
         imp.info <- list(size=eval(substitute((x)$m, list(x=mf[[m]]))),
                     names=NULL,
-                    sub=function(i, mf, m) { mf[[m]] <- substitute(midsimp2df(x, y), list(x=mf[[m]], y=i)); return(eval(mf)) })
+                    sub=function(i, mf, m) { mf[[m]] <- substitute(mice::complete(x, y), list(x=mf[[m]], y=i)); return(eval(mf)) })
     else if ("amelia" %in% mfmclass || "imputationList" %in% mfmclass)
         imp.info <- list(size=eval(substitute(length((x)$imputations), list(x=mf[[m]]))),
                     names=eval(substitute(names((x)$imputations), list(x=mf[[m]]))),
