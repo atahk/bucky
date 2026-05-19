@@ -1,12 +1,22 @@
 vcovCR <- function(x, cluster = NULL, type = c("CR", "CR0", "CR1")) {
+    cluster_expr <- match.call()$cluster
     mf <- x$call
-    m <- match(c("formula", "data", "subset", "weights", "na.action", 
+    m <- match(c("formula", "data", "subset", "weights", "na.action",
                  "etastart", "mustart", "offset"), names(mf), 0L)
     mf <- mf[c(1L, m)]
     mf$drop.unused.levels <- TRUE
     mf[[1L]] <- quote(stats::model.frame)
-    mf$cluster <- match.call()$cluster
-    cluster <- eval(mf, parent.frame())$"(cluster)"
+    mf$cluster <- cluster_expr
+    cluster <- tryCatch(suppressWarnings(eval(mf, parent.frame()))$"(cluster)", error = function(e) NULL)
+    if (is.null(cluster) || length(cluster) != nobs(x)) {
+        # stats::model.frame may mishandle formulas with | (e.g. ivreg); fall
+        # back to evaluating the cluster expression against the raw data and
+        # applying the model's own na.action.
+        data <- eval(x$call$data, parent.frame())
+        cluster <- eval(cluster_expr, data, parent.frame())
+        if (!is.null(x$na.action))
+            cluster <- cluster[-x$na.action]
+    }
     if (is.null(cluster))
         stop("Must specify cluster variable.")
     if (any(is.na(cluster)))

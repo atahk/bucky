@@ -82,7 +82,7 @@ mi.eval <- function(EXPR, robust, cluster, coef., vcov., df.=NULL, parallel=FALS
     if (parallel) {
         parallel <- requireNamespace("parallel", quietly=TRUE)
         if (!parallel)
-            warning("Can't load \"parallel\" parallel. Using serial computation.")
+            warning("Can't load the \"parallel\" package. Using serial computation.")
     }
     if (parallel) {
         imp.list <- parallel::mclapply(1:num.imp, imp.info$sub, mf=mf, m=m, ..., mc.silent=TRUE, mc.allow.recursive=FALSE)
